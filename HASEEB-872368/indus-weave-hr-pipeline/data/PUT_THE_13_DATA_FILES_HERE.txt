@@ -1,0 +1,1 @@
+Copy employees.csv, biometric_punches.csv ... data_dictionary.md into this folder.

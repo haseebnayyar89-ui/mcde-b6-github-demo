@@ -1,0 +1,106 @@
+// Paste this into https://dbdiagram.io (Import > DBML) and export as PNG -> warehouse/erd.png
+Table dim_department {
+  department_key integer [pk]
+  dept_id text [unique]
+  dept_name text
+  plant_code text
+  plant_name text
+  cost_center text
+  previous_name text
+  renamed_on text
+}
+Table dim_shift {
+  shift_key integer [pk]
+  shift_code text [unique]
+  start_time text
+  end_time text
+  crosses_midnight integer
+  grace_minutes integer
+}
+Table dim_date {
+  date_key integer [pk]
+  full_date text [unique]
+  year integer
+  month integer
+  month_key text
+  month_name text
+  day integer
+  day_name text
+  is_sunday integer
+  week_start text
+}
+Table dim_month {
+  month text [pk]
+  month_start text
+  month_end text
+  prev_end text
+}
+Table dim_employee {
+  employee_key integer [pk]
+  emp_id text
+  full_name text
+  gender text
+  hire_date text
+  separation_date text
+  employment_type text
+  status text
+  annual_leave_entitlement integer
+  department_key integer [ref: > dim_department.department_key]
+  designation text
+  grade text
+  basic_salary real
+  valid_from text
+  valid_to text
+  is_current integer
+  change_reason text
+  indexes { (emp_id, valid_from) [unique] }
+}
+Table fact_attendance_daily {
+  attendance_key integer [pk]
+  employee_key integer [ref: > dim_employee.employee_key]
+  emp_id text
+  date_key integer [ref: > dim_date.date_key]
+  shift_key integer [ref: > dim_shift.shift_key]
+  department_key integer [ref: > dim_department.department_key]
+  plant_code text
+  status text
+  check_in text
+  check_out text
+  punch_count integer
+  worked_hours real
+  late_minutes integer
+  early_departure_minutes integer
+  overtime_hours real
+  is_late integer
+  is_early_departure integer
+}
+Table fact_leave_day {
+  request_id text
+  date_key integer [ref: > dim_date.date_key]
+  employee_key integer [ref: > dim_employee.employee_key]
+  emp_id text
+  leave_type text
+  indexes { (request_id, date_key) [pk] }
+}
+Table fact_overtime_approved {
+  request_id text [pk]
+  employee_key integer [ref: > dim_employee.employee_key]
+  emp_id text
+  date_key integer [ref: > dim_date.date_key]
+  requested_hours real
+  approved_hours real
+  status text
+  approver_id text
+}
+Table fact_payroll_line {
+  line_id text [pk]
+  payroll_month text
+  employee_key integer [ref: > dim_employee.employee_key]
+  emp_id text
+  date_key integer [ref: > dim_date.date_key]
+  department_key integer [ref: > dim_department.department_key]
+  component text
+  component_type text
+  units real
+  amount real
+}

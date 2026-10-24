@@ -1,0 +1,2 @@
+# No third-party packages are needed.
+# The whole pipeline uses only the Python 3.8+ standard library (csv, json, sqlite3).
